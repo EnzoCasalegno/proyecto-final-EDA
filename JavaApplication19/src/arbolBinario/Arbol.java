@@ -4,7 +4,8 @@
  */
 package arbolBinario;
 
-import Nodo.Nodo;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -22,6 +23,10 @@ public class Arbol {
 
     public void insertar(int puntuacion) {
         int indice = 0;
+        if (arbolBinario[indice] == -1) {
+            System.out.println("El arbol se encuentra vacio, el valor asignado ahora es la raiz");
+        }
+
         while (arbolBinario[indice] != -1) { //Verificamos si el arbol tiene raiz o no. Si tiene ingresa, sino se le asigna el valor mediante la primer puntuacion
             if (puntuacion >= arbolBinario[indice]) {
                 indice = 2 * indice + 2; // Nodo derecha
@@ -32,13 +37,67 @@ public class Arbol {
         }
         arbolBinario[indice] = puntuacion; // Aca insertamos la puntuacion deltro del arbol (RAIZ)
     }
-    
+
     public void cargar() {
         for (int i = 0; i < 20; i++) {
             arbolBinario[i] = -1;
         }
 
     }
+
+    public List<Integer> recorridoInorden() {
+        List<Integer> resultado = new ArrayList<>();
+        recorridoInordenRecursivo(0, resultado);
+        return resultado;
+    }
+    //Recorre mediante el inorden el arbol binario y devuelve una lista con las puntuaciones ordenadas
+
+    private void recorridoInordenRecursivo(int indice, List<Integer> resultado) {
+        if (indice < 20 && arbolBinario[indice] != -1) {
+            recorridoInordenRecursivo(2 * indice + 1, resultado);
+            // Recorrer el subárbol izquierdo
+            resultado.add(arbolBinario[indice]); 
+            // Agregar la puntuación actual
+            recorridoInordenRecursivo(2 * indice + 2, resultado); 
+            // Recorrer el sub arbol derecho
+        }
+    }
+    
+      public List<List<Integer>> organizarRondasFinales() {
+        List<List<Integer>> rondas = new ArrayList<>(); //Almacena las rondas finales
+        List<Integer> puntuaciones = recorridoInorden(); //Contiene todas las puntuacioenes de los arqueros
+                                                               // ordenados de forma ascendente
+        
+        int nivel = 0;  //Representa en el nivel del arbol que estamos 
+        int ronda = 0;  //Representa el numero de ronda que estamos organizando
+        
+        
+        while (!puntuaciones.isEmpty()) {
+            //El bucle funciona mientas que existan puntuaciones en la lista 
+            rondas.add(new ArrayList<>());  // en cada iteracion creamos una lista dentro de rondas para representar una ronda
+            int n = (int) Math.pow(2, nivel); // Número de nodos en el nivel actual
+            
+            for (int i = 0; i < n; i++) {
+                //Con este for recorremos cada nodo en la ronda actual
+                if (!puntuaciones.isEmpty()) { //Siempre que existan puntuanciones 
+                    if (ronda % 2 == 0) { // En las rondas pares, tomar la puntuación más alta
+                        rondas.get(ronda).add(puntuaciones.remove(0));
+                    } else { // En las rondas impares, tomar la puntuación más baja
+                        rondas.get(ronda).add(puntuaciones.remove(puntuaciones.size() - 1));
+                    }
+                }
+            }
+            
+            nivel++; //incrementamos el nivel para pasar al siguiente nivel del arbol
+            ronda++; //Incrementamos el numero de ronda para pasar a organizar la siguiente ronda
+        }
+        
+        return rondas;
+//        Una vez que se han organizado todas las rondas, retornamos la lista rondas, que
+//        contiene todas las rondas finales con las puntuaciones de los arqueros
+//        organizadas según el criterio especificado (alta-baja, baja-alta, alta-baja, ...).
+    }
+
 }
 //2. Vamos a determinar quien tiene la puntuacion maxima, fijandonos en el ultimo nodo de la derecha . 
 //3. Para armar las rondas finales, lo vamos a hacer con una lista segun el orden que elijamos y ingresando a una lista los valores. 
