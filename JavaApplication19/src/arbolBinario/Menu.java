@@ -15,12 +15,14 @@ public class Menu {
         Scanner scanner = new Scanner(System.in);
         Arbol arbol = new Arbol();
 
+        
         while (true) {
             System.out.println("Seleccione una opción:");
             System.out.println("1. Ingresar puntuaciones.");
             System.out.println("2. Obtener mejores puntuaciones.");
             System.out.println("3. Armar rondas finales con mejores puntuaciones.");
-            System.out.println("4. Salir");
+            System.out.println("4. Mostrar Arbol");
+            System.out.println("5. Salir");
 
             int opcion = scanner.nextInt();
             scanner.nextLine();
@@ -50,8 +52,14 @@ public class Menu {
                     }
                     break;
                 case 4:
+                    System.out.println("Mostrando árbol binario y ubicación de las puntuaciones:");
+                    arbol.mostrarArbol();
+                    break;
+
+                case 5:
                     System.out.println("Saliendo del programa...");
                     return;
+
                 default:
                     System.out.println("Opción no válida. Por favor, seleccione una opción correcta.");
             }
