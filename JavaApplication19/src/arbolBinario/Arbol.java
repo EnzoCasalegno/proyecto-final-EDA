@@ -24,7 +24,8 @@ public class Arbol {
     public void insertar(int puntuacion) {
         int indice = 0;
         if (arbolBinario[indice] == -1) {
-            System.out.println("El arbol se encuentra vacio, el valor asignado ahora es la raiz");
+            System.out.println("El arbol se encuentra vacio, el valor " + puntuacion + " ahora es la raiz");
+            System.out.println();
         }
 
         while (arbolBinario[indice] != -1) { //Verificamos si el arbol tiene raiz o no. Si tiene ingresa, sino se le asigna el valor mediante la primer puntuacion

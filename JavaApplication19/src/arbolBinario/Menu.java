@@ -16,7 +16,7 @@ public class Menu {
         Arbol arbol = new Arbol();
 
         while (true) {
-            System.out.println("Seleccione una opción:");
+            System.out.println("Seleccione una opcion:");
             System.out.println("1. Ingresar puntuaciones.");
             System.out.println("2. Obtener mejores puntuaciones.");
             System.out.println("3. Armar rondas finales con mejores puntuaciones.");
@@ -27,11 +27,11 @@ public class Menu {
 
             switch (opcion) {
                 case 1:
-                    System.out.println("Ingrese la puntuación:");
+                    System.out.println("Ingrese la puntuacion:");
                     int puntuacion = scanner.nextInt();
                     scanner.nextLine();
                     arbol.insertar(puntuacion);
-                    System.out.println("Puntuación ingresada correctamente.");
+                    System.out.println("Puntuacion ingresada correctamente.");
                     break;
                 case 2:
                     System.out.println("Mejores puntuaciones:");
@@ -42,7 +42,7 @@ public class Menu {
                 case 3:
                     System.out.println("Armando rondas finales...");
                     for (List<Integer> ronda : arbol.organizarRondasFinales()) {
-                        System.out.print("Ronda: ");
+                        System.out.print("Ronda: " + ronda);
                         for (Integer punt : ronda) {
                             System.out.print(punt + " ");
                         }
