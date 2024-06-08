@@ -1,125 +1,122 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package arbolBinario;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Enzo
- */
 public class Arbol {
-
-    Nodo raiz;
-    private int[] arbolBinario;
+    private Nodo raiz;
 
     public Arbol() {
-        this.arbolBinario = new int[20];
-        cargar();// Creamos el arbol vacio ( -1 ). 
+        this.raiz = null;
     }
 
     public void insertar(int puntuacion) {
-        int indice = 0;
-        if (arbolBinario[indice] == -1) {
+        if (raiz == null) {
+            raiz = new Nodo(puntuacion, null, null);
             System.out.println("El arbol se encuentra vacio, el valor " + puntuacion + " ahora es la raiz");
-            System.out.println();
+        } else {
+            insertarRecursivo(raiz, puntuacion);
         }
-
-        while (arbolBinario[indice] != -1) { //Verificamos si el arbol tiene raiz o no. Si tiene ingresa, sino se le asigna el valor mediante la primer puntuacion
-            if (puntuacion >= arbolBinario[indice]) {
-                indice = 2 * indice + 2; // Nodo derecha
-
-            } else {
-                indice = 2 * indice + 1; //Nodo izquierda
-            }
-        }
-        arbolBinario[indice] = puntuacion; // Aca insertamos la puntuacion deltro del arbol (RAIZ)
     }
 
-    public void cargar() {
-        for (int i = 0; i < 20; i++) {
-            arbolBinario[i] = -1;
+    private void insertarRecursivo(Nodo nodo, int puntuacion) {
+        if (puntuacion >= nodo.puntuacion) {
+            if (nodo.derecho == null) {
+                nodo.derecho = new Nodo(puntuacion, null, null);
+            } else {
+                insertarRecursivo(nodo.derecho, puntuacion);
+            }
+        } else {
+            if (nodo.izquierdo == null) {
+                nodo.izquierdo = new Nodo(puntuacion, null, null);
+            } else {
+                insertarRecursivo(nodo.izquierdo, puntuacion);
+            }
         }
-
     }
 
     public List<Integer> recorridoInorden() {
         List<Integer> resultado = new ArrayList<>();
-        recorridoInordenRecursivo(0, resultado);
+        recorridoInordenRecursivo(raiz, resultado);
         return resultado;
     }
-    //Recorre mediante el inorden el arbol binario y devuelve una lista con las puntuaciones ordenadas
 
-    private void recorridoInordenRecursivo(int indice, List<Integer> resultado) {
-        if (indice < 20 && arbolBinario[indice] != -1) {
-            recorridoInordenRecursivo(2 * indice + 1, resultado);
-            // Recorrer el subárbol izquierdo
-            resultado.add(arbolBinario[indice]);
-            // Agregar la puntuación actual
-            recorridoInordenRecursivo(2 * indice + 2, resultado);
-            // Recorrer el sub arbol derecho
+    private void recorridoInordenRecursivo(Nodo nodo, List<Integer> resultado) {
+        if (nodo != null) {
+            recorridoInordenRecursivo(nodo.izquierdo, resultado);
+            resultado.add(nodo.puntuacion);
+            recorridoInordenRecursivo(nodo.derecho, resultado);
         }
     }
 
     public List<List<Integer>> organizarRondasFinales() {
-        List<List<Integer>> rondas = new ArrayList<>(); //Almacena las rondas finales
-        List<Integer> puntuaciones = recorridoInorden(); //Contiene todas las puntuacioenes de los arqueros
-        // ordenados de forma ascendente
+    List<List<Integer>> rondas = new ArrayList<>();
+    List<Integer> puntuaciones = recorridoInorden();
 
-        int nivel = 0;  //Representa en el nivel del arbol que estamos 
-        int ronda = 0;  //Representa el numero de ronda que estamos organizando
+    // Definir los nombres de las rondas
+    String[] nombresRondas = {"Cuartos de final", "Semi final", "Final"};
 
-        while (!puntuaciones.isEmpty()) {
-            //El bucle funciona mientas que existan puntuaciones en la lista 
-            rondas.add(new ArrayList<>());  // en cada iteracion creamos una lista dentro de rondas para representar una ronda
-            int n = (int) Math.pow(2, nivel); // Número de nodos en el nivel actual
+    // Organizar las rondas
+    int nivelInicial = nombresRondas.length - 1;
+    int jugadores = puntuaciones.size();
+    int ronda = 0;
 
-            for (int i = 0; i < n; i++) {
-                //Con este for recorremos cada nodo en la ronda actual
-                if (!puntuaciones.isEmpty()) { //Siempre que existan puntuanciones 
-                    if (ronda % 2 == 0) { // En las rondas pares, tomar la puntuación más alta
-                        rondas.get(ronda).add(puntuaciones.remove(0));
-                    } else { // En las rondas impares, tomar la puntuación más baja
-                        rondas.get(ronda).add(puntuaciones.remove(puntuaciones.size() - 1));
-                    }
-                }
+    while (jugadores > 1 && ronda < nombresRondas.length) {
+        List<Integer> rondaActual = new ArrayList<>();
+        for (int i = 0; i < jugadores; i += 2) {
+            if (i + 1 < puntuaciones.size()) {
+                rondaActual.add(Math.max(puntuaciones.get(i), puntuaciones.get(i + 1)));
+            } else {
+                // Si hay un jugador sin oponente, avanza automáticamente a la siguiente ronda
+                rondaActual.add(puntuaciones.get(i));
             }
-
-            nivel++; //incrementamos el nivel para pasar al siguiente nivel del arbol
-            ronda++; //Incrementamos el numero de ronda para pasar a organizar la siguiente ronda
         }
-
-        return rondas;
-//        Una vez que se han organizado todas las rondas, retornamos la lista rondas, que
-//        contiene todas las rondas finales con las puntuaciones de los arqueros
-//        organizadas según el criterio especificado (alta-baja, baja-alta, alta-baja, ...).
+        rondas.add(rondaActual);
+        puntuaciones = rondaActual;
+        jugadores = (int) Math.ceil((double) jugadores / 2); // Actualizamos la cantidad de jugadores para la siguiente ronda
+        ronda++;
     }
+
+    // Imprimir las rondas con nombres específicos
+    for (int i = 0; i < rondas.size(); i++) {
+        System.out.print(nombresRondas[i] + ": ");
+        for (Integer punt : rondas.get(i)) {
+            System.out.print(punt + " ");
+        }
+        System.out.println();
+    }
+
+    // Agregar el ganador
+    if (!rondas.isEmpty()) {
+        int ganador = rondas.get(rondas.size() - 1).get(0);
+        System.out.println("Ganador: " + ganador);
+    }
+
+    return rondas;
+}
+
 
     public void mostrarArbol() {
-        System.out.println("Árbol Binario:");
-        mostrarArbolRecursivo(0, 0);
+        System.out.println("Arbol Binario:");
+        mostrarArbolRecursivo(raiz, 0);
         System.out.println("\nRondas Finales:");
-        List<List<Integer>> rondasFinales = organizarRondasFinales();
-        for (int i = 0; i < rondasFinales.size(); i++) {
-            System.out.print("Ronda " + (i + 1) + ": ");
-            for (Integer punt : rondasFinales.get(i)) {
-                System.out.print(punt + " ");
-            }
-            System.out.println();
-        }
+        organizarRondasFinales(); // Llama a organizarRondasFinales() una vez
     }
 
-    private void mostrarArbolRecursivo(int indice, int nivel) {
-        if (indice < 20 && arbolBinario[indice] != -1) {
-            mostrarArbolRecursivo(2 * indice + 2, nivel + 1);
+    private void mostrarArbolRecursivo(Nodo nodo, int nivel) {
+        if (nodo != null) {
+            mostrarArbolRecursivo(nodo.derecho, nivel + 1);
             for (int i = 0; i < nivel; i++) {
                 System.out.print("\t");
             }
-            System.out.println("|__ " + arbolBinario[indice]);
-            mostrarArbolRecursivo(2 * indice + 1, nivel + 1);
+            if (nivel == 0) {
+                System.out.println(nodo.puntuacion);
+            } else {
+                System.out.println("|_ " + nodo.puntuacion);
+            }
+            mostrarArbolRecursivo(nodo.izquierdo, nivel + 1);
         }
     }
 }
+
+
